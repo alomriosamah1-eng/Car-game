@@ -6,6 +6,8 @@ The shipped build uses three generated visual assets stored through WebDev stora
 
 The game world and the three runtime vehicles are procedural Babylon meshes. This is a deliberate licensing and performance decision: no external GLB, audio pack, or UI icon pack is silently bundled.
 
+The exterior now also loads `veloura-car-concept.glb`, the Khronos glTF Sample Assets **Car Concept** model, when available. The model is credited to Eric Chadwick / Darmstadt Graphics Group GmbH and is listed under Creative Commons Attribution 4.0 International in the Khronos showcase. The Khronos and 3D Commerce logos included in the sample are identified by Khronos as non-copyrightable legal marks. The source and credit are documented at [Khronos glTF Sample Assets](https://github.com/KhronosGroup/glTF-Sample-Assets/blob/main/Models/Models-showcase.md). The procedural exterior remains as a runtime fallback if the GLB cannot be loaded; the custom cockpit, steering wheel and driver details remain project-owned Babylon geometry.
+
 ## GitHub research decisions
 
 The research workflow inspected BabylonJS/Babylon.js (Apache-2.0), mmmovania/BabylonPhysicsTutorials (Apache-2.0), manuelhintermayr/babylon-js-car-example (MIT), pmndrs/cannon-es (MIT), KayKit City Builder Bits (CC0), TheDuckCow/godot-road-generator (MIT), Khronos glTF CarConcept (CC BY 4.0), Swastyy/gltf-car (CC BY 4.0), Antonio-R1/engine-sound-generator (MIT), romainsimon/uisfx (MIT code and CC0 audio), Heroicons (MIT), Tabler Icons (MIT), and game-icons (mixed CC BY/CC0 by icon).

@@ -33,10 +33,12 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
 
   const world = new World(scene);
   const vehicle = new Vehicle(scene);
+  await vehicle.loadRealExterior("/manus-storage/veloura-car-concept_84ee75e9.glb");
   const input = new InputManager();
   const audio = new AudioManager();
   let cameraMode: CameraMode = "chase";
   let demo = new URLSearchParams(window.location.search).has("demo");
+  let elapsedSeconds = 0;
   let disposed = false;
 
   const chaseCamera = new FreeCamera("chase-camera", new Vector3(0, 4.8, -9.6), scene);
@@ -45,12 +47,16 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
   const cockpitCamera = new FreeCamera("cockpit-camera", new Vector3(0, 1.7, 1.05), scene);
   cockpitCamera.fov = 0.98;
   cockpitCamera.minZ = 0.06;
+  cockpitCamera.position.set(-0.18, 1.7, 0.15);
   scene.activeCamera = chaseCamera;
 
   const applyCamera = (mode: CameraMode) => {
     cameraMode = mode;
+    vehicle.setCockpitVisible(mode === "cockpit");
     scene.activeCamera = mode === "chase" ? chaseCamera : cockpitCamera;
   };
+
+  vehicle.setCockpitVisible(false);
 
   const handle = {
     scene,
@@ -79,19 +85,20 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
     const p = vehicle.getPosition();
     const yaw = vehicle.getRotationY();
     if (cameraMode === "chase") {
-      const desired = new Vector3(p.x - Math.sin(yaw) * 7.7, p.y + 4.0, p.z - Math.cos(yaw) * 8.4);
+      const desired = new Vector3(p.x - Math.sin(yaw) * 7.7, p.y + 2.8, p.z - Math.cos(yaw) * 8.4);
       chaseCamera.position = Vector3.Lerp(chaseCamera.position, desired, 1 - Math.pow(0.0005, dt));
-      chaseCamera.setTarget(new Vector3(p.x, p.y + 0.68, p.z + 6.0));
+      chaseCamera.setTarget(new Vector3(p.x, p.y + 0.72, p.z + 6.0));
     } else {
-      const desired = new Vector3(p.x + Math.sin(yaw) * 0.05, p.y + 1.45, p.z + Math.cos(yaw) * 1.14);
+      const desired = new Vector3(p.x - 0.18, p.y + 1.18, p.z + 0.15);
       cockpitCamera.position = Vector3.Lerp(cockpitCamera.position, desired, 1 - Math.pow(0.0002, dt));
-      cockpitCamera.rotation.set(0, yaw, 0);
+      cockpitCamera.setTarget(new Vector3(p.x - 0.18, p.y + 1.08, p.z + 5.5));
     }
   };
 
   scene.onBeforeRenderObservable.add(() => {
     if (disposed) return;
     const dt = Math.min(scene.getEngine().getDeltaTime() / 1000, 0.05);
+    elapsedSeconds += dt;
     const control = input.getState();
     if (demo) {
       const t = performance.now() / 1000;
@@ -100,7 +107,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
       control.steer = Math.sin(t * 0.26) * 0.34;
     }
     vehicle.update(control, dt);
-    world.update(vehicle);
+    world.update(vehicle, elapsedSeconds);
     updateCamera(dt);
     audio.update(vehicle.getRpm(), control.throttle, control.brake);
     onSnapshot?.({
