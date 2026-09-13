@@ -100,7 +100,7 @@ export default function GameCanvas() {
     const orientation = screen.orientation as ScreenOrientation & { lock?: (orientation: string) => Promise<void> };
     if (typeof orientation?.lock === "function") void orientation.lock("landscape").catch(() => undefined);
   };
-  const play = () => { setPanel("home"); unlock(); };
+  const play = () => { setPanel("home"); gameRef.current?.startDrive(); unlock(); };
   const fileSelected = (event: React.ChangeEvent<HTMLInputElement>) => { const file = event.target.files?.[0]; if (!file) return; setMusicName(file.name); gameRef.current?.setMusicFile(file); setMusicPlaying(true); };
   const toggleMusic = () => { setMusicPlaying(gameRef.current?.toggleMusic() ?? false); };
 

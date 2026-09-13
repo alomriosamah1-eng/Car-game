@@ -96,6 +96,33 @@ export class Vehicle {
     instrumentCluster.position.set(-0.1, 1.19, 0.73);
     instrumentCluster.material = this.interiorMaterial;
 
+    const screenMaterial = new StandardMaterial("cockpit-screen-material", scene);
+    screenMaterial.diffuseColor = new Color3(0.06, 0.15, 0.18);
+    screenMaterial.emissiveColor = new Color3(0.02, 0.16, 0.18);
+    const centerScreen = MeshBuilder.CreateBox("cockpit-center-screen", { width: 0.62, height: 0.18, depth: 0.035 }, scene);
+    centerScreen.parent = this.cockpitRoot;
+    centerScreen.position.set(0.42, 1.13, 0.72);
+    centerScreen.rotation.x = -0.12;
+    centerScreen.material = screenMaterial;
+    for (const x of [-0.72, 0.72]) {
+      const vent = MeshBuilder.CreateBox(`dashboard-vent-${x}`, { width: 0.34, height: 0.12, depth: 0.05 }, scene);
+      vent.parent = this.cockpitRoot;
+      vent.position.set(x, 1.13, 0.72);
+      vent.material = this.leatherMaterial;
+    }
+    const rearMirror = MeshBuilder.CreateBox("rear-view-mirror", { width: 0.72, height: 0.12, depth: 0.06 }, scene);
+    rearMirror.parent = this.cockpitRoot;
+    rearMirror.position.set(0.18, 1.86, -0.08);
+    rearMirror.material = screenMaterial;
+    const leftPillar = MeshBuilder.CreateBox("left-windshield-pillar", { width: 0.12, height: 1.25, depth: 0.12 }, scene);
+    leftPillar.parent = this.cockpitRoot;
+    leftPillar.position.set(-1.02, 1.53, 0.06);
+    leftPillar.rotation.z = -0.2;
+    leftPillar.material = this.interiorMaterial;
+    const rightPillar = leftPillar.clone("right-windshield-pillar");
+    rightPillar.position.x = 1.02;
+    rightPillar.rotation.z = 0.2;
+
     this.steeringWheel = MeshBuilder.CreateTorus("cockpit-steering-wheel", { diameter: 0.66, thickness: 0.085, tessellation: 24 }, scene);
     this.steeringWheel.parent = this.cockpitRoot;
     this.steeringWheel.position.set(-0.62, 1.08, 0.7);
@@ -263,8 +290,8 @@ export class Vehicle {
       this.speed = Math.max(-7.5, this.speed - input.brake * 8.5 * safeDt);
     } else {
       const throttleForce = input.throttle * this.spec.acceleration;
-      const rollingResistance = 0.75 + Math.abs(this.speed) * 0.018;
-      this.speed += (throttleForce - Math.sign(this.speed || 1) * rollingResistance) * safeDt;
+      const rollingResistance = Math.abs(this.speed) > 0.02 ? 0.75 + Math.abs(this.speed) * 0.018 : 0;
+      this.speed += (throttleForce - Math.sign(this.speed) * rollingResistance) * safeDt;
       if (input.brake > 0.01) {
         const brakeForce = this.spec.braking * input.brake * safeDt;
         if (Math.abs(this.speed) <= brakeForce) this.speed = 0;
@@ -291,7 +318,9 @@ export class Vehicle {
       this.skidPulse = 1;
     }
 
-    this.distance = Math.max(this.distance, this.root.position.z);
+    this.distance += Math.abs(this.speed) * safeDt;
+    if (this.root.position.z > 1200) this.root.position.z -= 1200;
+    if (this.root.position.z < -40) this.root.position.z += 1200;
     const spin = this.speed * safeDt * 2.6;
     this.wheels.forEach((wheel) => {
       wheel.rotation.x += spin;

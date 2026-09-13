@@ -160,7 +160,9 @@ export class World {
     this.scene.fogColor = Color3.Lerp(new Color3(0.28, 0.22, 0.34), new Color3(0.035, 0.04, 0.11), nightBlend);
     // Keep the authored route centered on the vehicle. This makes the coastal world
     // effectively endless without popping or running out of buildings and trees.
-    this.root.position.z = position.z;
+    // Move the authored world in large chunks, not every frame. This preserves
+    // visible parallax and lets road markings and scenery pass the vehicle.
+    this.root.position.z = Math.floor(position.z / 420) * 420;
   }
 
   dispose() {
