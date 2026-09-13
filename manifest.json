@@ -1,0 +1,11 @@
+{
+  "name": "Veloura Drive",
+  "short_name": "Veloura",
+  "description": "Premium offline coastal driving experience",
+  "start_url": "/?demo",
+  "display": "standalone",
+  "background_color": "#110f19",
+  "theme_color": "#171020",
+  "orientation": "landscape",
+  "lang": "ar"
+}
