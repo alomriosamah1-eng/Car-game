@@ -23,6 +23,7 @@ export class Vehicle {
   private readonly steeringWheel: Mesh;
   private proceduralExterior: AbstractMesh[] = [];
   private realExterior: TransformNode | null = null;
+  private cockpitVisible = false;
   private spec = getVehicle("aurelia");
   private speed = 0;
   private lateralVelocity = 0;
@@ -222,6 +223,7 @@ export class Vehicle {
       container.position.set(0, -bounds.min.y * scale + 0.06, 0);
       container.rotation.y = Math.PI;
       this.realExterior = container;
+      this.realExterior.setEnabled(!this.cockpitVisible);
       this.proceduralExterior.forEach((mesh) => { mesh.isVisible = false; });
       return true;
     } catch (error) {
@@ -238,6 +240,7 @@ export class Vehicle {
   }
 
   setCockpitVisible(visible: boolean) {
+    this.cockpitVisible = visible;
     this.cockpitRoot.setEnabled(visible);
     this.cabin.isVisible = !visible;
     this.realExterior?.setEnabled(!visible);
