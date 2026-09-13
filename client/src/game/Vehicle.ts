@@ -210,7 +210,10 @@ export class Vehicle {
 
   async loadRealExterior(url: string) {
     try {
-      const result = await SceneLoader.ImportMeshAsync("", "/manus-storage/", url.split("/").pop() ?? "", this.scene);
+      const separator = url.lastIndexOf("/");
+      const rootUrl = separator >= 0 ? url.slice(0, separator + 1) : "";
+      const fileName = separator >= 0 ? url.slice(separator + 1) : url;
+      const result = await SceneLoader.ImportMeshAsync("", rootUrl, fileName, this.scene);
       const importedRoot = result.meshes[0];
       if (!importedRoot) return false;
       const container = new TransformNode("real-car-exterior", this.scene);
