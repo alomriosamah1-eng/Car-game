@@ -23,6 +23,7 @@ export interface GameHandle {
   setMusicVolume: (value: number) => void;
   reset: () => void;
   startDrive: () => void;
+  setPaused: (paused: boolean) => void;
 }
 
 export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement, onSnapshot?: (snapshot: GameSnapshot) => void): Promise<GameHandle> {
@@ -47,6 +48,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
   let cameraMode: CameraMode = "chase";
   let demo = new URLSearchParams(window.location.search).has("demo");
   let driveStarted = demo;
+  let paused = false;
   let elapsedSeconds = 0;
   let disposed = false;
 
@@ -80,6 +82,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
     setMusicVolume: (value: number) => audio.setMusicVolume(value),
     reset: () => vehicle.reset(),
     startDrive: () => { driveStarted = true; },
+    setPaused: (value: boolean) => { paused = value; },
     dispose: () => {
       if (disposed) return;
       disposed = true;
@@ -110,6 +113,7 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
     const dt = Math.min(scene.getEngine().getDeltaTime() / 1000, 0.05);
     elapsedSeconds += dt;
     const control = input.getState();
+    if (paused) return;
     if (demo) {
       const t = performance.now() / 1000;
       control.throttle = 0.64 + Math.sin(t * 0.45) * 0.14;
