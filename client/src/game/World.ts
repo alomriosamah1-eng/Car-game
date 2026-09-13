@@ -1,8 +1,8 @@
 import { Color3, Color4, HemisphericLight, MeshBuilder, PBRMaterial, StandardMaterial, Texture, TransformNode, Vector3, type Scene } from "@babylonjs/core";
 import { Vehicle } from "./Vehicle";
 
-const skyUrl = `${import.meta.env.BASE_URL}assets/veloura-coastal-sky.png`;
-const nightSkyUrl = `${import.meta.env.BASE_URL}assets/veloura-coastal-night.png`;
+const skyUrl = `${import.meta.env.BASE_URL}assets/veloura-coastal-sky.webp`;
+const nightSkyUrl = `${import.meta.env.BASE_URL}assets/veloura-coastal-night.webp`;
 
 function material(scene: Scene, name: string, color: Color3, roughness = 0.76) {
   const m = new PBRMaterial(name, scene);

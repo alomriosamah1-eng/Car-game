@@ -35,7 +35,12 @@ export async function createGameScene(engine: Engine, canvas: HTMLCanvasElement,
   const vehicle = new Vehicle(scene);
   // Start instantly with the lightweight fallback; upgrade to the realistic GLB
   // asynchronously so a slower mobile connection never shows a blank game.
-  void vehicle.loadRealExterior(`${import.meta.env.BASE_URL}assets/veloura-car-concept.glb`);
+  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
+  if (!isMobile) {
+    window.setTimeout(() => {
+      void vehicle.loadRealExterior(`${import.meta.env.BASE_URL}assets/veloura-car-concept.glb`);
+    }, 3500);
+  }
   const input = new InputManager();
   const audio = new AudioManager();
   let cameraMode: CameraMode = "chase";
